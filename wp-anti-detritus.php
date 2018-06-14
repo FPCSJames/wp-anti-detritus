@@ -6,7 +6,7 @@
  * Description: Ditch the crap in the HTML output and admin area of WordPress.
  * Version: 1.0.1
  * Author: James M. Joyce, Flashpoint Computer Services, LLC
- * Author URI: https://ww.flashpointcs.net
+ * Author URI: https://www.flashpointcs.net
  * License: MIT
  * License URI: https://fpcs.mit-license.org
  */
