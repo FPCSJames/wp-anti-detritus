@@ -4,7 +4,7 @@
 WordPress is a full-fat CMS. Trim it some with this plugin.
 
 ## Requirements
-PHP 5.3 or higher
+PHP 5.4 or higher
 
 ## Usage
 Upload, activate, and enjoy.
