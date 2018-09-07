@@ -1,15 +1,15 @@
 <?php
 /*
- * Plugin Name: WP Anti-Detritus
- * Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
- * GitHub Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
- * Description: Ditch the crap in the HTML output and admin area of WordPress.
- * Version: 1.0.1
- * Author: James M. Joyce, Flashpoint Computer Services, LLC
- * Author URI: https://www.flashpointcs.net
- * License: MIT
- * License URI: https://fpcs.mit-license.org
- */
+* Plugin Name: WP Anti-Detritus
+* Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
+* GitHub Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
+* Description: Ditch the crap in the HTML output and admin area of WordPress.
+* Version: 1.0.1
+* Author: James M. Joyce, Flashpoint Computer Services, LLC
+* Author URI: https://www.flashpointcs.net
+* License: MIT
+* License URI: https://fpcs.mit-license.org
+*/
 
 if(!defined('ABSPATH')) { exit; }
 
@@ -20,6 +20,12 @@ add_filter('get_image_tag_class', function($class, $id, $align, $size) { return 
 add_filter('emoji_svg_url', '__return_false');
 remove_action('welcome_panel', 'wp_welcome_panel');
 add_filter('jpeg_quality', function($v) { return 95; });
+add_filter('the_generator', '__return_empty_string');
+add_filter('feed_links_show_comments_feed', '__return_false');
+
+if(class_exists('RevSliderFront')) {
+   add_filter('revslider_meta_generator', '__return_null');
+}
 
 add_filter('body_class', function($classes) {
    global $post;
@@ -27,12 +33,12 @@ add_filter('body_class', function($classes) {
       $classes[] = $post->post_name;
    }
    return $classes;
-}, 10, 1);
+});
 
 add_filter('wp_headers', function($headers) {
    unset($headers['X-Pingback']);
    return $headers;
-}, 10, 1);
+});
 
 add_action('wp_loaded', function() {
    global $wp_widget_factory;
@@ -66,23 +72,43 @@ add_action('init', function() {
       remove_action('wp_head', [visual_composer(), 'addMetaData']);
    }
    if(defined('W3TC') && W3TC) {
-	   add_filter('w3tc_can_print_comment', '__return_false');
+      add_filter('w3tc_can_print_comment', '__return_false');
    }
    if(class_exists('WPSEO_Frontend') && method_exists('WPSEO_Frontend', 'debug_mark')) {
-	   remove_action('wpseo_head', [WPSEO_Frontend::get_instance(), 'debug_mark'], 2);
+      remove_action('wpseo_head', [WPSEO_Frontend::get_instance(), 'debug_mark'], 2);
+   }
+   if(class_exists('WooCommerce')) {
+      remove_action('wp_head', 'woo_version');
    }
 });
 
 add_action('wp_dashboard_setup', function() {
-	remove_meta_box('dashboard_primary', 'dashboard', 'side');
-	remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
-    remove_meta_box('dashboard_secondary', 'dashboard', 'normal');
-	remove_meta_box('dashboard_quick_press', 'dashboard', 'side'); // Quick Draft
-	remove_meta_box('e-dashboard-overview', 'dashboard', 'normal'); // Elementor
-	remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal'); // Yoast
-	remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal'); // WooCommerce
+   remove_meta_box('dashboard_primary', 'dashboard', 'side');
+   remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+   remove_meta_box('dashboard_secondary', 'dashboard', 'normal');
+   remove_meta_box('dashboard_quick_press', 'dashboard', 'side'); // Quick Draft
+   remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal'); // Yoast
+   remove_submenu_page('themes.php', 'custom-header'); // Appearance > Header
+   remove_submenu_page('themes.php', 'custom-background'); // Appearance > Background
+   if(defined('ELEMENTOR_VERSION')) {
+      remove_meta_box('e-dashboard-overview', 'dashboard', 'normal');
+   }
+   if(class_exists('WooCommerce')) {
+      remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal'); // WooCommerce
+   }
 });
 
-if(class_exists('RevSliderFront')) {
-   add_filter('revslider_meta_generator', '__return_null');
-}
+add_filter('contextual_help', function($old_help, $screen_id, $screen) {
+   $screen->remove_help_tabs();
+   return $old_help;
+}, 999, 3);
+
+add_action('admin_bar_menu', function($wp_admin_bar) { $wp_admin_bar->remove_node('new-content'); }, 100);
+
+add_action('widgets_init', function() {
+   unregister_widget('WP_Widget_Pages');
+   unregister_widget('WP_Widget_Meta');
+   unregister_widget('WP_Widget_Tag_Cloud');
+   unregister_widget('WP_Widget_RSS');
+   unregister_widget('WP_Widget_Calendar');
+});
