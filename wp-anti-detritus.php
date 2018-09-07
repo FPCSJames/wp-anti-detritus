@@ -18,6 +18,8 @@ add_filter('admin_footer_text', '__return_null');
 add_action('login_headerurl', function() { return home_url(); });
 add_filter('get_image_tag_class', function($class, $id, $align, $size) { return 'align'.esc_attr($align); }, 10, 4);
 add_filter('emoji_svg_url', '__return_false');
+remove_action('welcome_panel', 'wp_welcome_panel');
+add_filter('jpeg_quality', function($v) { return 95; });
 
 add_filter('body_class', function($classes) {
    global $post;
@@ -61,15 +63,24 @@ add_action('init', function() {
    add_filter('rest_jsonp_enabled', '__return_false');
    wp_deregister_script('wp-embed');
    if(function_exists('visual_composer')) {
-      remove_action('wp_head', array(visual_composer(), 'addMetaData'));
+      remove_action('wp_head', [visual_composer(), 'addMetaData']);
    }
    if(defined('W3TC') && W3TC) {
 	   add_filter('w3tc_can_print_comment', '__return_false');
    }
+   if(class_exists('WPSEO_Frontend') && method_exists('WPSEO_Frontend', 'debug_mark')) {
+	   remove_action('wpseo_head', [WPSEO_Frontend::get_instance(), 'debug_mark'], 2);
+   }
 });
 
 add_action('wp_dashboard_setup', function() {
-	remove_meta_box( 'woocommerce_dashboard_status', 'dashboard', 'normal');
+	remove_meta_box('dashboard_primary', 'dashboard', 'side');
+	remove_meta_box('dashboard_right_now', 'dashboard', 'normal');
+    remove_meta_box('dashboard_secondary', 'dashboard', 'normal');
+	remove_meta_box('dashboard_quick_press', 'dashboard', 'side'); // Quick Draft
+	remove_meta_box('e-dashboard-overview', 'dashboard', 'normal'); // Elementor
+	remove_meta_box('wpseo-dashboard-overview', 'dashboard', 'normal'); // Yoast
+	remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal'); // WooCommerce
 });
 
 if(class_exists('RevSliderFront')) {
