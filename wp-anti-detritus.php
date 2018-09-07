@@ -13,7 +13,10 @@
 
 if(!defined('ABSPATH')) { exit; }
 
-add_action('admin_bar_menu', function($wp_admin_bar) { $wp_admin_bar->remove_node( 'wp-logo' ); }, 999);
+add_action('admin_bar_menu', function($wp_admin_bar) {
+   $wp_admin_bar->remove_node('wp-logo');
+   $wp_admin_bar->remove_node('new-content');
+}, 999);
 add_filter('admin_footer_text', '__return_null');
 add_action('login_headerurl', function() { return home_url(); });
 add_filter('get_image_tag_class', function($class, $id, $align, $size) { return 'align'.esc_attr($align); }, 10, 4);
@@ -102,8 +105,6 @@ add_filter('contextual_help', function($old_help, $screen_id, $screen) {
    $screen->remove_help_tabs();
    return $old_help;
 }, 999, 3);
-
-add_action('admin_bar_menu', function($wp_admin_bar) { $wp_admin_bar->remove_node('new-content'); }, 100);
 
 add_action('widgets_init', function() {
    unregister_widget('WP_Widget_Pages');
