@@ -21,13 +21,13 @@ final class WP_Anti_Detritus {
       add_action('wp_loaded', [$this, 'clean_wp_head']);
       add_filter('body_class', [$this, 'add_slug_to_body_class']);
       add_filter('contextual_help', [$this, 'remove_contextual_help'], 999, 3);
-      add_filter('rest_authentication_errors', [$this, 'restrict_rest_api_to_authenticated_users']);
       add_action('widgets_init', [$this, 'remove_default_widgets']);
       add_filter('wp_headers', [$this, 'remove_pingback_header']);
 
       add_action('login_headerurl', function() { return home_url(); });
       add_filter('admin_footer_text', '__return_null');
       add_filter('emoji_svg_url', '__return_false');
+      add_filter('enable_post_by_email_configuration', '__return_false', 999);
       add_filter('feed_links_show_comments_feed', '__return_false');
       add_filter('get_image_tag_class', function($c, $i, $align, $s) { return 'align'.esc_attr($align); }, 10, 4);
       add_filter('jpeg_quality', function($v) { return 95; });
@@ -36,6 +36,9 @@ final class WP_Anti_Detritus {
 
       if(class_exists('RevSliderFront')) {
          add_filter('revslider_meta_generator', '__return_null');
+      }
+      if(defined('WPAD_DISABLE_REST') && WPAD_DISABLE_REST) {
+         add_filter('rest_authentication_errors', [$this, 'restrict_rest_api_to_authenticated_users']);
       }
    }
 
@@ -60,6 +63,12 @@ final class WP_Anti_Detritus {
       }
       if(class_exists('WooCommerce')) {
          remove_meta_box('woocommerce_dashboard_status', 'dashboard', 'normal'); // WooCommerce
+      }
+      if(function_exists('tribe_get_events')) {
+         remove_meta_box('tribe_dashboard_widget', 'dashboard', 'side'); // The Events Calendar
+      }
+      if(class_exists('OCEANWP_Theme_Class')) {
+         remove_meta_box('owp_dashboard_news', 'dashboard', 'normal'); // OceanWP News
       }
    }
 
