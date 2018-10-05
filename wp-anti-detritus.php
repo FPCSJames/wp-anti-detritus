@@ -4,7 +4,7 @@
 * Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
 * GitHub Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
 * Description: Ditch the crap in the HTML output and admin area of WordPress.
-* Version: 1.1.0
+* Version: 1.1.1
 * Author: James M. Joyce, Flashpoint Computer Services, LLC
 * Author URI: https://www.flashpointcs.net
 * License: MIT
