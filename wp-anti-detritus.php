@@ -99,6 +99,9 @@ final class WP_Anti_Detritus {
       if(class_exists('WooCommerce')) { // WooCommerce: remove generator tag
          remove_action('wp_head', 'woo_version');
       }
+      if(class_exists('Easy_Digital_Downloads')) { // EDD: remove generator tag
+         remove_action('wp_head', 'edd_version_in_header');
+      }
 
       // Remove Recent Comments markup
       global $wp_widget_factory;
