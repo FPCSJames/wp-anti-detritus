@@ -4,7 +4,7 @@
 * Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
 * GitHub Plugin URI: https://github.com/FPCSJames/wp-anti-detritus
 * Description: Ditch the crap in the HTML output and admin area of WordPress.
-* Version: 1.1.2
+* Version: 1.1.3
 * Author: James M. Joyce, Flashpoint Computer Services, LLC
 * Author URI: https://www.flashpointcs.net
 * License: MIT
@@ -20,7 +20,6 @@ final class WP_Anti_Detritus {
       add_action('wp_dashboard_setup', [$this, 'clean_wp_admin']);
       add_action('wp_loaded', [$this, 'clean_wp_head']);
       add_filter('body_class', [$this, 'add_slug_to_body_class']);
-      add_filter('contextual_help', [$this, 'remove_contextual_help'], 999, 3);
       add_action('widgets_init', [$this, 'remove_default_widgets']);
       add_filter('wp_headers', [$this, 'remove_pingback_header']);
 
@@ -30,7 +29,7 @@ final class WP_Anti_Detritus {
       add_filter('enable_post_by_email_configuration', '__return_false', 999);
       add_filter('feed_links_show_comments_feed', '__return_false');
       add_filter('get_image_tag_class', function($c, $i, $align, $s) { return 'align'.esc_attr($align); }, 10, 4);
-      add_filter('jpeg_quality', function($v) { return 95; });
+      add_filter('jpeg_quality', function($v) { return 90; });
       add_filter('the_generator', '__return_empty_string');
       remove_action('welcome_panel', 'wp_welcome_panel');
 
@@ -118,11 +117,6 @@ final class WP_Anti_Detritus {
    public function remove_admin_bar_items($wp_admin_bar) {
       $wp_admin_bar->remove_node('wp-logo');
       $wp_admin_bar->remove_node('new-content');
-   }
-
-   public function remove_contextual_help($old_help, $screen_id, $screen) {
-      $screen->remove_help_tabs();
-      return $old_help;
    }
 
    public function remove_default_widgets() {
